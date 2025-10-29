@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "TIC_III-Tarea_1",
-    "project_version":    "8b7b09d",
+    "project_version":    "3c23663-dirty",
     "project_path":       "/home/chris/TIC_III/TIC_III-Tarea_1",
     "idf_path":           "/home/chris/esp/v5.5/esp-idf",
     "build_dir":          "/home/chris/TIC_III/TIC_III-Tarea_1/build",

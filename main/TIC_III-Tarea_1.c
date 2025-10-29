@@ -467,9 +467,50 @@ const uint8_t bmi270_config_file[] = {
 };
 
 // Prototipos (asumo tus funciones bmi_read/bmi_write/bmi_init tal como definiste)
-extern esp_err_t bmi_read(uint8_t *data_address, uint8_t *data_rd, size_t size);
-extern esp_err_t bmi_write(uint8_t *data_address, uint8_t *data_wr, size_t size);
-extern esp_err_t bmi_init(void);
+//extern esp_err_t bmi_read(uint8_t *data_address, uint8_t *data_rd, size_t size);
+//extern esp_err_t bmi_write(uint8_t *data_address, uint8_t *data_wr, size_t size);
+//extern esp_err_t bmi_init(void);
+i2c_master_dev_handle_t device;
+
+esp_err_t bmi_read( uint8_t *data_address, uint8_t *data_rd, size_t size) {
+    if (size == 0) {
+        return ESP_OK;
+    }
+    esp_err_t ret;
+
+    // Perform I2C read operation
+    ret = i2c_master_transmit(device, data_address, 1, pdMS_TO_TICKS(1000));
+    if (ret != ESP_OK) {
+        return ret;
+    }
+
+    ret = i2c_master_receive(device, data_rd, size, pdMS_TO_TICKS(1000));
+    return ret;
+}
+
+esp_err_t bmi_write(uint8_t *data_address, uint8_t *data_wr, size_t size) {
+    esp_err_t ret;
+
+    // Perform I2C write operation
+    uint8_t full_data[1 + size];
+    full_data[0] = *data_address;
+    memcpy(&full_data[1], data_wr, size);
+
+    ret = i2c_master_transmit(device, full_data, sizeof(full_data), pdMS_TO_TICKS(1000));
+    return ret;
+}
+
+esp_err_t bmi_init() {
+    esp_err_t ret;
+
+    i2c_master_bus_config_t i2c_mst_config = {
+    .clk_source = I2C_CLK_SRC_DEFAULT,
+    .i2c_port = I2C_NUM_0,
+    .scl_io_num = I2C_MASTER_SCL_IO,
+    .sda_io_num = I2C_MASTER_SDA_IO,
+    .glitch_ignore_cnt = 7,
+    .flags.enable_internal_pullup = true,
+};
 
 // --- Configuración WiFi / TCP Server (ajustar) ---
 #define WIFI_SSID       "TU_SSID"
